@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة مهارات التفكير العليا - تركيب المادة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .option-btn {
+            transition: all 0.25s ease;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between p-4 md:p-6 min-h-screen">
+
+    <!-- Header Section -->
+    <header class="glass-card rounded-2xl p-4 max-w-4xl mx-auto w-full mb-6 text-center border-b-2 border-indigo-500">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-2 mb-2 text-sm text-indigo-300">
+            <div>👩‍🏫 **إعداد المعلمة:** ريحانه عبدالله</div>
+            <div class="hidden md:block">🧪 **مادة العلوم - أول متوسط**</div>
+            <div>🏫 **مديرة المدرسة:** حصة العتيبي</div>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-pink-400">
+            🏆 مسابقة التحدي: تركيب المادة
+        </h1>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full flex-grow">
+        
+        <!-- Welcome Screen -->
+        <div id="start-card" class="glass-card rounded-3xl p-8 text-center">
+            <div class="text-6xl mb-4">⚛️</div>
+            <h2 class="text-2xl font-bold mb-4 text-cyan-300">مرحباً بكنّ يا عالمات المستقبل!</h2>
+            <p class="text-slate-300 mb-6 leading-relaxed max-w-2xl mx-auto">
+                اختبري معلوماتكِ في درس **تركيب المادة** من خلال الإجابة على الأسئلة الأربعة التالية بكل تركيز وتميز.
+            </p>
+            <button onclick="startQuiz()" class="bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition transform hover:scale-105">
+                🚀 ابدأ التحدي الآن
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-card" class="glass-card rounded-3xl p-6 md:p-8 hidden">
+            <!-- Progress & Score Header -->
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <div class="flex items-center gap-2">
+                    <span id="q-count" class="bg-indigo-600/80 text-indigo-100 text-xs md:text-sm font-bold px-3 py-1.5 rounded-full border border-indigo-400/30">
+                        سؤال 1 / 4
+                    </span>
+                </div>
+                <div class="text-amber-400 font-extrabold text-lg flex items-center gap-1">
+                    <span>⭐ النقاط:</span>
+                    <span id="score">0</span>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <h3 id="question-text" class="text-lg md:text-xl font-bold mb-6 text-slate-100 leading-snug">
+                جاري تحميل السؤال...
+            </h3>
+
+            <!-- Options Grid -->
+            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+                <!-- Options inserted dynamically -->
+            </div>
+
+            <!-- Feedback Card -->
+            <div id="feedback-card" class="hidden p-4 rounded-2xl mb-6 transition-all duration-300">
+                <div id="feedback-title" class="font-bold text-lg mb-1 flex items-center gap-2"></div>
+                <p id="feedback-explanation" class="text-sm leading-relaxed text-slate-200"></p>
+            </div>
+
+            <!-- Next Button -->
+            <div class="flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-black px-8 py-3 rounded-xl transition">
+                    السؤال التالي ⬅️
+                </button>
+            </div>
+        </div>
+
+        <!-- Final Results Screen -->
+        <div id="result-card" class="glass-card rounded-3xl p-8 text-center hidden">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 mb-2">
+                أبدعتِ يا بطلة العلوم!
+            </h2>
+            <p class="text-slate-300 mb-6">لقد أتممتِ التحدي بنجاح.</p>
+            
+            <div class="bg-slate-800/80 rounded-2xl p-6 max-w-sm mx-auto mb-6 border border-amber-500/30">
+                <div class="text-slate-400 text-sm mb-1">النتيجة النهائية</div>
+                <div class="text-4xl font-black text-amber-400 mb-2"><span id="final-score">0</span> / <span id="max-score">40</span></div>
+                <div id="performance-msg" class="text-sm font-bold text-indigo-300"></div>
+            </div>
+
+            <button onclick="restartQuiz()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-8 py-3 rounded-full transition">
+                🔄 إعادة التحدي
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Audio Effects and Logic -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1); 
+                osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.25); 
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        const quizQuestions = [
+            {
+                question: "هي كل شيء له كتلة ويشغل حيزاً من الفراغ:",
+                options: [
+                    "المادة",
+                    "الخلية",
+                    "الشغل"
+                ],
+                correct: 0,
+                explanation: "ممتازة! المادة هي كل شيء له كتلة ويشغل حيزاً من الفراغ."
+            },
+            {
+                question: "الوحدة الأساسية في بناء المادة:",
+                options: [
+                    "الذرة",
+                    "المركب",
+                    "المخلوط"
+                ],
+                correct: 0,
+                explanation: "أحسنتِ! الذرة هي الوحدة الأساسية لبناء المادة."
+            },
+            {
+                question: "جسيمات سالبة الشحنة خارج نواة الذرة تدور في مدارات كتلتها صغيرة وضئيلة جداً:",
+                options: [
+                    "البروتونات",
+                    "الإلكترونات",
+                    "النيوترونات"
+                ],
+                correct: 1,
+                explanation: "رائعة! الإلكترونات هي جسيمات سالبة تدور خارج النواة وكتلتها ضئيلة جداً."
+            },
+            {
+                question: "ما هو وجه الاختلاف الأساسي بين الإلكترونات والبروتونات؟",
+                options: [
+                    "الإلكترونات سالبة خارج النواة بينما البروتونات موجبة الشحنة داخل النواة",
+                    "الإلكترونات موجبة خارج النواة بينما البروتونات سالبة داخل النواة",
+                    "الإلكترونات داخل النواة والبروتونات خارج النواة"
+                ],
+                correct: 0,
+                explanation: "إجابة دقيقة وصحيحة تماماً! الإلكترونات سالبة وتوجد خارج النواة، بينما البروتونات موجبة وتوجد داخل النواة."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            document.getElementById('start-card').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const qData = quizQuestions[currentQIndex];
+
+            document.getElementById('q-count').innerText = `سؤال ${currentQIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('question-text').innerText = qData.question;
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            const fbCard = document.getElementById('feedback-card');
+            fbCard.className = "hidden p-4 rounded-2xl mb-6 transition-all duration-300";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-right p-4 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 font-medium text-sm md:text-base leading-relaxed flex items-start gap-3";
+                btn.innerHTML = `
+                    <span class="bg-indigo-950 text-indigo-300 text-xs font-bold rounded-lg px-2.5 py-1 border border-indigo-700/50">${String.fromCharCode(65 + idx)}</span>
+                    <span class="flex-grow">${opt}</span>
